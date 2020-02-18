@@ -23,3 +23,32 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+let token;
+Cypress.Commands.add('Login', () => {
+    cy.visit('/#/admin')
+    cy.request({
+        method: 'POST',
+        url: '/auth/login',
+        body: {
+            username : 'admin',
+            password: 'password'
+        }
+    })
+    .then((response) => {
+      expect(response.body.token).to.exist;
+      token = response.body.token;
+    });
+});
+
+Cypress.Commands.add('uiLogin', () => {
+    cy.get('#username').type('admin')
+    cy.get('#password').type('password')
+    cy.get('#doLogin').click()
+})
+
+Cypress.Commands.add('closeWizard', () => {
+    for (let step = 1; step < 5; step++) {
+        cy.get('#next').click()
+    }
+    cy.get('#closeModal').click()
+})
